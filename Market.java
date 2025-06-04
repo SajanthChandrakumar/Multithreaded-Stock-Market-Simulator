@@ -16,9 +16,13 @@ public class Market {
         stock.add(stocks);
     }
 
-    public void displayMarket() {
-        for (Stock sto : stock) {
-            sto.displayStock();
+    public synchronized Stock getStockBySymbol(String symbol) {
+        for (Stock s : stock) {
+            if (s.getSymbol().equalsIgnoreCase(symbol)) {
+                return s;
+            }
         }
+        return null;
     }
+
 }
