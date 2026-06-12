@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Live Stock Market Simulator Dashboard">
+    <title>Stock Market Simulator Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <h1>StockSim<span>Pro</span></h1>
+            </div>
+            <div class="status-indicator">
+                <span class="pulse"></span>
+                <span>Live Feed Active</span>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="stocks-section">
+                <h2><i class="icon-trending-up"></i> Market Overview</h2>
+                <div class="stocks-grid" id="stocks-container">
+                    <!-- Stock cards will be injected here by JS -->
+                    <div class="loading">Fetching market data...</div>
+                </div>
+            </section>
+
+            <section class="traders-section">
+                <h2><i class="icon-users"></i> Top Traders</h2>
+                <div class="table-container">
+                    <table class="traders-table">
+                        <thead>
+                            <tr>
+                                <th>Trader Name</th>
+                                <th>Balance ($)</th>
+                                <th>Net Profit ($)</th>
+                                <th>Trades</th>
+                                <th>Buys</th>
+                                <th>Sells</th>
+                            </tr>
+                        </thead>
+                        <tbody id="traders-container">
+                            <!-- Trader rows will be injected here by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
