@@ -36,17 +36,38 @@ async function fetchTraders() {
     }
 }
 
+function generateSparkline(history, isUp) {
+    if (!history || history.length < 2) return '';
+    const min = Math.min(...history);
+    const max = Math.max(...history);
+    const range = max - min || 1;
+    const width = 100;
+    const height = 40;
+    
+    const points = history.map((val, i) => {
+        const x = (i / (history.length - 1)) * width;
+        const y = height - ((val - min) / range) * height;
+        return `${x},${y}`;
+    }).join(' ');
+
+    const color = isUp ? 'var(--positive)' : 'var(--negative)';
+    return `
+        <svg viewBox="-5 -5 110 50" class="sparkline">
+            <polyline fill="none" stroke="${color}" stroke-width="3" points="${points}" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    `;
+}
+
 function renderStocks(stocks) {
     if (!stocksContainer) return;
     
-    // Clear initial loading state
     if (stocksContainer.innerHTML.includes('loading')) {
         stocksContainer.innerHTML = '';
     }
 
     stocks.forEach(stock => {
         const prevPrice = previousStocks[stock.symbol] || stock.price;
-        const isUp = stock.price > prevPrice;
+        const isUp = stock.price >= prevPrice;
         const isDown = stock.price < prevPrice;
         const priceColorClass = isUp ? 'text-positive' : isDown ? 'text-negative' : '';
         const animationClass = isUp ? 'update-up' : isDown ? 'update-down' : '';
@@ -54,7 +75,6 @@ function renderStocks(stocks) {
         let card = document.getElementById(`stock-${stock.symbol}`);
         
         if (!card) {
-            // Create new card
             card = document.createElement('div');
             card.className = 'stock-card';
             card.id = `stock-${stock.symbol}`;
@@ -66,20 +86,24 @@ function renderStocks(stocks) {
                 <div class="stock-price-container">
                     <div class="stock-price" id="price-${stock.symbol}"></div>
                 </div>
+                <div class="sparkline-container" id="sparkline-${stock.symbol}"></div>
             `;
             stocksContainer.appendChild(card);
         }
 
-        // Update price
         const priceElement = document.getElementById(`price-${stock.symbol}`);
         if (stock.price !== prevPrice || !priceElement.textContent) {
             priceElement.textContent = formatCurrency(stock.price);
             priceElement.className = `stock-price ${priceColorClass}`;
             
-            // Trigger animation
             card.classList.remove('update-up', 'update-down');
-            void card.offsetWidth; // trigger reflow
+            void card.offsetWidth;
             if (animationClass) card.classList.add(animationClass);
+        }
+        
+        const sparklineContainer = document.getElementById(`sparkline-${stock.symbol}`);
+        if (stock.history) {
+            sparklineContainer.innerHTML = generateSparkline(stock.history, isUp);
         }
 
         previousStocks[stock.symbol] = stock.price;
@@ -93,9 +117,12 @@ function renderTraders(traders) {
         const profitClass = trader.netProfit > 0 ? 'positive' : trader.netProfit < 0 ? 'negative' : 'neutral';
         const sign = trader.netProfit > 0 ? '+' : '';
         
+        const strategyBadgeClass = trader.strategy === 'Mean Reversion' ? 'strategy-smart' : 'strategy-random';
+
         return `
             <tr>
                 <td class="trader-name">${trader.name}</td>
+                <td><span class="strategy-badge ${strategyBadgeClass}">${trader.strategy}</span></td>
                 <td class="tabular-nums">${formatCurrency(trader.balance)}</td>
                 <td>
                     <span class="profit-badge ${profitClass}">

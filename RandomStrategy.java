@@ -12,4 +12,9 @@ public class RandomStrategy implements TradingStrategy{
     public boolean shouldSell(Stock stock) {
         return random.nextDouble() < 0.5; // prob. to sell 50%
     }
+
+    @Override
+    public String getName() {
+        return "Random";
+    }
 }

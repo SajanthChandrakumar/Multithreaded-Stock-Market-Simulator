@@ -14,15 +14,18 @@ public class StockMarketSimulator {
             market.addStock(new Stock(sym, 100.0));
         }
 
-        // 2. Strategie festlegen (z.B. Random oder MeanReversion)
-        TradingStrategy strategy = new RandomStrategy();
+        // 2 & 3. Strategien festlegen und Threadpool für Trader starten
+        TradingStrategy randomStrategy = new RandomStrategy();
+        TradingStrategy meanStrategy = new MeanReversionStrategy();
 
-        // 3. Threadpool für Trader starten
         ExecutorService traderPool = Executors.newVirtualThreadPerTaskExecutor();
-        for (int i = 1; i <= 20; i++) {
-            Trader t = new StrategyTrader("StrategicTrader" + i, 1000, market, strategy);
-            allTraders.add(t);
-            traderPool.execute(t);
+        for (int i = 1; i <= 10; i++) {
+            Trader t1 = new StrategyTrader("RandomTrader" + i, 1000, market, randomStrategy);
+            Trader t2 = new StrategyTrader("SmartTrader" + i, 1000, market, meanStrategy);
+            allTraders.add(t1);
+            allTraders.add(t2);
+            traderPool.execute(t1);
+            traderPool.execute(t2);
         }
 
         // 4. Einmalig StockUpdater‐Thread starten (nicht in Schleife, nur hier)

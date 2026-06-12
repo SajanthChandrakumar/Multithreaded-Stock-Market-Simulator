@@ -51,7 +51,17 @@ public class ApiServer {
             List<Stock> stocks = market.getStocks();
             for (int i = 0; i < stocks.size(); i++) {
                 Stock s = stocks.get(i);
-                json.append(String.format("{\"symbol\": \"%s\", \"price\": %.2f}", s.getSymbol(), s.getPrice()));
+                
+                // Construct history array
+                StringBuilder hist = new StringBuilder("[");
+                Object[] histArr = s.getHistory().toArray();
+                for (int j = 0; j < histArr.length; j++) {
+                    hist.append(String.format("%.2f", (Double) histArr[j]));
+                    if (j < histArr.length - 1) hist.append(",");
+                }
+                hist.append("]");
+
+                json.append(String.format("{\"symbol\": \"%s\", \"price\": %.2f, \"history\": %s}", s.getSymbol(), s.getPrice(), hist.toString()));
                 if (i < stocks.size() - 1) {
                     json.append(",");
                 }
@@ -82,9 +92,14 @@ public class ApiServer {
             for (int i = 0; i < traders.size(); i++) {
                 Trader t = traders.get(i);
                 TraderStats s = t.getStats();
+                String strategyName = "Unknown";
+                if (t instanceof StrategyTrader) {
+                    strategyName = ((StrategyTrader) t).getStrategyName();
+                }
+                
                 json.append(String.format(
-                        "{\"name\": \"%s\", \"balance\": %.2f, \"totalTrades\": %d, \"buyCount\": %d, \"sellCount\": %d, \"netProfit\": %.2f}",
-                        t.getName(), t.getBalance(), s.totalTrades, s.buyCount, s.sellCount, s.netProfit
+                        "{\"name\": \"%s\", \"strategy\": \"%s\", \"balance\": %.2f, \"totalTrades\": %d, \"buyCount\": %d, \"sellCount\": %d, \"netProfit\": %.2f}",
+                        t.getName(), strategyName, t.getBalance(), s.totalTrades, s.buyCount, s.sellCount, s.netProfit
                 ));
                 if (i < traders.size() - 1) {
                     json.append(",");

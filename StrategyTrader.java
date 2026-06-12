@@ -9,6 +9,10 @@ public class StrategyTrader extends Trader { // Trader, der mithilfe einer Strat
         this.strategy = strategy;
     }
 
+    public String getStrategyName() {
+        return strategy.getName();
+    }
+
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
