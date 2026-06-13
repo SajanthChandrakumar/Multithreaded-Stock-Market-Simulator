@@ -25,12 +25,12 @@ The simulator uses the Strategy Design Pattern to determine how a trader behaves
 
 1. **Compile the Java code:**
    ```bash
-   javac *.java
+   javac -d bin src/*.java
    ```
 
 2. **Run the Simulator (Backend API):**
    ```bash
-   java StockMarketSimulator
+   java -cp bin StockMarketSimulator
    ```
    *This starts the simulation and an HTTP API server on port 8080.*
 
